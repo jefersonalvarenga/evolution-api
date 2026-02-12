@@ -28,10 +28,10 @@ O Easypanel detecta o `Dockerfile` e faz o build da imagem `atendai/evolution-ap
 
 **2. Adicione o serviço Evolution API:**
 - Tipo: **App**
-- Source: **GitHub** → `jefersonalvarenga/evolution-api`
-- Branch: `main`
-- Build method: **Dockerfile** (detectado automaticamente)
+- Source: **Docker Image** → `atendai/evolution-api:latest`
 - Porta: `8080`
+
+> **Importante:** use **Docker Image** como source, não GitHub. O repositório GitHub contém apenas as configurações (`.env.example`, `docker-compose.yml`). O Easypanel não precisa buildar nada — a imagem já está pronta no Docker Hub.
 
 **3. Adicione o serviço Redis:**
 - Tipo: **Redis**

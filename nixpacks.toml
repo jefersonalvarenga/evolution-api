@@ -1,0 +1,6 @@
+# Força o Easypanel/Nixpacks a usar o Dockerfile ao invés de auto-detectar
+[phases.setup]
+nixPkgs = []
+
+[start]
+cmd = ""
