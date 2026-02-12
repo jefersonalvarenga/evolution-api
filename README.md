@@ -39,16 +39,24 @@ O Easypanel detecta o `Dockerfile` e faz o build da imagem `atendai/evolution-ap
 
 **4. Configure as variáveis de ambiente** no serviço `evolution-api`:
 
-| Variável | Onde obter |
+| Variável | Valor / Onde obter |
 |---|---|
 | `SERVER_URL` | URL pública do serviço (ex: `https://evolution.seudominio.com`) |
 | `AUTHENTICATION_API_KEY` | Gere com `openssl rand -hex 32` |
-| `DATABASE_URL` | Supabase → Settings → Database → URI (connection pooling) |
-| `CACHE_REDIS_URI` | `redis://:SENHA@nome-servico-redis:6379/1` |
+| `DATABASE_PROVIDER` | `postgresql` |
+| `DATABASE_CONNECTION_URI` | Supabase → Settings → Database → **Connection pooling** → URI (porta `6543`) |
+| `DATABASE_URL` | Supabase → Settings → Database → **Connection string** → URI (porta `5432`) + `?schema=public&pgbouncer=false&connection_limit=1` |
+| `DATABASE_CONNECTION_CLIENT_NAME` | `evolution_easyscale` (qualquer nome único) |
+| `CACHE_REDIS_ENABLED` | `true` |
+| `CACHE_REDIS_URI` | `redis://:SENHA@<projeto>_<serviço-redis>:6379/6` |
 | `REDIS_PASSWORD` | Senha definida no serviço Redis |
 
-> **Dica:** No Easypanel, o hostname do Redis é o nome do serviço dentro do projeto.
-> Exemplo: se o projeto é `easyscale` e o serviço Redis é `redis`, use `easyscale_redis` ou apenas `redis` dependendo da versão do Easypanel.
+> **⚠️ Hostname do Redis no Easypanel:** o formato é sempre `<projeto>_<serviço>`.
+> Exemplo: projeto `easyscale` + serviço `redis-evolution-api` → hostname = `easyscale_redis-evolution-api`
+> Logo: `CACHE_REDIS_URI=redis://:SENHA@easyscale_redis-evolution-api:6379/6`
+
+> **⚠️ Duas URLs do banco:** o Prisma Migrate exige conexão direta (porta `5432`) em `DATABASE_URL`,
+> enquanto a aplicação usa o pooler (porta `6543`) em `DATABASE_CONNECTION_URI`.
 
 **5. Aponte o domínio** para o serviço — HTTPS via Let's Encrypt é automático
 
