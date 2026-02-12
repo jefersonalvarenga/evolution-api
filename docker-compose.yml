@@ -10,7 +10,10 @@ version: "3.8"
 
 services:
   evolution-api:
-    image: atendai/evolution-api:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: evolution-api-local
     container_name: evolution_api
     restart: always
     ports:
