@@ -1,0 +1,68 @@
+# ============================================================
+# Easypanel - Schema de Deploy
+# https://easypanel.io/docs/reference/schema
+# ============================================================
+
+services:
+  - name: evolution-api
+    type: app
+    data:
+      source:
+        type: image
+        image: atendai/evolution-api:latest
+      domains:
+        - host: "$(PRIMARY_DOMAIN)"
+          port: 8080
+          https: true
+      ports: []
+      volumes:
+        - type: volume
+          name: instances
+          mountPath: /evolution/instances
+      env: |
+        SERVER_URL=https://$(PRIMARY_DOMAIN)
+        SERVER_PORT=8080
+        AUTHENTICATION_API_KEY=$(AUTHENTICATION_API_KEY)
+        AUTHENTICATION_TYPE=apikey
+        DATABASE_URL=postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(PROJECT_NAME)_postgres:5432/$(POSTGRES_DB)?schema=public
+        CACHE_REDIS_URI=redis://:$(REDIS_PASSWORD)@$(PROJECT_NAME)_redis:6379/1
+        CACHE_REDIS_PREFIX_KEY=evolution
+        CACHE_REDIS_SAVE_INSTANCES=false
+        CACHE_LOCAL_TTL=300
+        STORE_MESSAGES=true
+        STORE_MESSAGE_UP=true
+        STORE_CONTACTS=true
+        STORE_CHATS=true
+        WEBHOOK_GLOBAL_ENABLED=false
+        WEBHOOK_EVENTS_QRCODE_UPDATED=true
+        WEBHOOK_EVENTS_MESSAGES_UPSERT=true
+        WEBHOOK_EVENTS_MESSAGES_UPDATE=true
+        WEBHOOK_EVENTS_CONNECTION_UPDATE=true
+        QRCODE_LIMIT=30
+        LOG_LEVEL=ERROR
+        LOG_COLOR=true
+        LOG_BAILEYS=error
+        TELEMETRY=false
+      deploy:
+        replicas: 1
+        zeroDowntime: true
+      resources:
+        memoryLimit: 512
+
+  - name: postgres
+    type: postgres
+    data:
+      image: postgres:15-alpine
+      password: $(POSTGRES_PASSWORD)
+      user: $(POSTGRES_USER)
+      database: $(POSTGRES_DB)
+      volume:
+        name: postgres_data
+
+  - name: redis
+    type: redis
+    data:
+      image: redis:7-alpine
+      password: $(REDIS_PASSWORD)
+      volume:
+        name: redis_data
